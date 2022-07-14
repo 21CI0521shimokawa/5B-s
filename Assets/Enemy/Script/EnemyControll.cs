@@ -2,79 +2,59 @@ using System.Collections;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 
 
 public class EnemyControll : MonoBehaviour
 {
-    private enum EnemyState
-    {
-        IDOL,
-        MOVE,
-        ATTACK,
-    }
-    EnemyState NowState;
-    private int EnemyHP_;
-    public int EnemyHP
-    {
-        get { return EnemyHP_; }
-        set { EnemyHP_ = value; }
-    }
-
+    [SerializeField] EnemyStatus EnemyStatus;
+    [SerializeField] EnemyMove EnemyMove;
+    [SerializeField] EnemyAttack EnemyAttack;
+    [SerializeField] GameObject LookEye;
     [SerializeField] float MoveSpeed;
     [SerializeField] Rigidbody EnemyRigidBody;
     void Start()
     {
-        NowState = EnemyState.MOVE;
+    }
+    private void FixedUpdate()
+    {
+        var Directoin = transform.forward;
+        RaycastHit hit;
+        Debug.DrawRay(gameObject.transform.position,Directoin* 6, Color.blue, 0.1f);
+        if (Physics.Raycast(gameObject.transform.position, Directoin, out hit, 6.0f))
+        {
+            EnemyStatus._EnemyState = EnemyStatus.EnemyState.MOVE;
+        }
+        else
+        {
+            EnemyStatus._EnemyState = EnemyStatus.EnemyState.IDOL;
+            this.transform.LookAt(LookEye.transform);
+            /* this.transform.DORotate(Vector3.up * 90f, 1f).OnComplete(() =>
+             {//実行完了時のコールバック
+             });*/
+        }
     }
     void Update()
     {
-        switch (NowState)
+        Debug.Log(EnemyStatus._EnemyState);
+        switch (EnemyStatus._EnemyState)
         {
-            case EnemyState.IDOL:
+            case EnemyStatus.EnemyState.IDOL:
                 break;
-            case EnemyState.MOVE:
-                Move();
+            case EnemyStatus.EnemyState.MOVE:
+                EnemyMove._Move(gameObject);
                 break;
-            case EnemyState.ATTACK:
-                StrengthDesignation();
+            case EnemyStatus.EnemyState.ATTACK:
+                EnemyAttack.StrengthDesignation();
                 break;
             default:
                 break;
         }
     }
-    private void Move()
+    void LookStage()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            EnemyRigidBody.AdvanceMove(this.transform, MoveSpeed);
-        }
-        else if (Input.GetKey(KeyCode.DownArrow))
-        {
-            EnemyRigidBody.RecessionMove(this.transform, MoveSpeed);
-        }
-        else
-        {
-            EnemyRigidBody.AdvanceMove(this.transform, 0.0f);
-        }
-    }
-    void StrengthDesignation()
-    {
-        var SpaceDownStream = this.UpdateAsObservable().Where(_ => Input.GetKeyDown(KeyCode.Space));
-        var SpaceUpStream = this.UpdateAsObservable().Where(_ => Input.GetKeyUp(KeyCode.Space));
-
-        SpaceDownStream
-            .SelectMany(_ => Observable.Interval(System.TimeSpan.FromSeconds(1f)))
-            .TakeUntil(SpaceUpStream)
-            .DoOnCompleted(() =>
-            {
-                Debug.Log("パワーボム");
-            })
-            .RepeatUntilDestroy(this)
-            .Subscribe(_ =>
-            {
-                Debug.Log("時間が足りません");
-            });
+        this.transform.LookAt(LookEye.transform);
     }
 }
