@@ -29,7 +29,7 @@ public class EnemyControll : MonoBehaviour
         var Directoin = transform.forward;
         Vector3 rayPosition = transform.position + new Vector3(0.0f, 0.0f, 0.0f);
         RaycastHit hit;
-        Debug.DrawRay(rayPosition, Directoin * rayDistance*6, Color.red*6);
+        Debug.DrawRay(rayPosition, Directoin * rayDistance * 6, Color.red * 6);
         if (Physics.Raycast(gameObject.transform.position, Directoin, out hit, 6.0f))
         {
             EnemyStatus._EnemyState = EnemyStatus.EnemyState.MOVE;
@@ -39,18 +39,15 @@ public class EnemyControll : MonoBehaviour
             NearObject = MovingPositionSearch(this.gameObject, "MOVEPOSITON");
             EnemyStatus._EnemyState = EnemyStatus.EnemyState.IDOL;
             this.transform.DOMove(NearObject.transform.position, 3f)
-                .OnComplete(() =>
-            {//実行完了時のコールバック
-                #region 未処理
-                this.transform.rotation = NearObject.transform.rotation;
-                EnemyStatus._EnemyState = EnemyStatus.EnemyState.MOVE;
-                #endregion
-            });
+                .OnUpdate(() =>
+                {
+                    this.transform.rotation = NearObject.transform.rotation;
+                    EnemyStatus._EnemyState = EnemyStatus.EnemyState.MOVE;
+                });
         }
     }
     void Update()
     {
-        Debug.Log(EnemyStatus._EnemyState);
         switch (EnemyStatus._EnemyState)
         {
             case EnemyStatus.EnemyState.IDOL:
@@ -74,11 +71,7 @@ public class EnemyControll : MonoBehaviour
 
         foreach (GameObject @object in GameObject.FindGameObjectsWithTag(TagName))
         {
-            //自身と取得したオブジェクトとの距離取得
             RangeWithObject = Vector3.Distance(@object.transform.position, NowObj.transform.position);
-
-            //オブジェクトに距離が近いか、距離0であればオブジェクト名を取得
-            //一時変数に距離を格納
             if (NearDistance == 0 || NearDistance > RangeWithObject)
             {
                 NearDistance = RangeWithObject;
@@ -86,6 +79,7 @@ public class EnemyControll : MonoBehaviour
             }
         }
         //最も近かったオブジェクトを返す
+        Debug.Log(targetObject);
         return targetObject;
     }
 }
