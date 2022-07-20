@@ -27,7 +27,7 @@ public class PlayerMovable : MonoBehaviour
     }
     public void SetRotation(float dir)
     {
-        transform.eulerAngles = new Vector3(0, -dir * Mathf.Rad2Deg, 0);
+        transform.rotation = Quaternion.LookRotation(new Vector3(Mathf.Cos(dir), 0, Mathf.Sin(dir)));
     }
 
     // TODO: カメラ、InputManagerを直したあとに変更する必要がある
@@ -42,6 +42,7 @@ public class PlayerMovable : MonoBehaviour
         }
         
         float dir = Mathf.Atan2(z, x);
+        Debug.Log(dir * Mathf.Rad2Deg);
         SetVelocity(dir);
         SetRotation(dir);
     }

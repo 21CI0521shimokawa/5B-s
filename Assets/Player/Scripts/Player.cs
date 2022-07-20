@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public static Player instance;
+
     private PlayerStatus _status;
     private PlayerMovable _move;
 
@@ -10,6 +12,10 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {   
+        if (instance == null) {
+            instance = this;
+        }
+
         TryGetComponent(out _status);
         TryGetComponent(out _move);
     }
@@ -35,14 +41,13 @@ public class Player : MonoBehaviour
     // TODO: ボムとの当たり判定
     private void OnTriggerEnter(Collider other)
     {
-        // ボム（タグ？）
-        // if (other.CompareTag("????")) {
-        //     ReceiveDamage();
-        // }
+        if (other.CompareTag("Blast")) {
+            ReceiveDamage();
+        }
     }
 
     private void ReceiveDamage()
     {
-        // _status.ToDamaged();
+        _status.ToDamaged();
     }
 }
