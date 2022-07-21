@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Bomb : MonoBehaviour
 {
     public GameObject explosionPrefab;
     
     //ステージのレイヤー
-    public LayerMask levelMask;
+    public LayerMask layerMask;
 
     //すでに爆発している場合連鎖しない
     private bool exploded = false;
+
+    [SerializeField] int range = 2;
 
     public void Start() {
         //爆発
@@ -35,7 +38,7 @@ public class Bomb : MonoBehaviour
         StartCoroutine(CreateExplosions(Vector3.right));//右に広げる
         StartCoroutine(CreateExplosions(Vector3.left));//左に広げる
 
-        transform.Find("Collider").gameObject.SetActive(false);
+        //transform.Find("Collider").gameObject.SetActive(false);
 
         //0.3秒後に非表示にした爆弾を削除
         Destroy(gameObject, 0.3f);
@@ -44,18 +47,18 @@ public class Bomb : MonoBehaviour
     //爆風を広げる
     private IEnumerator CreateExplosions(Vector3 direction) {
         //2マス分ループする
-        for(int i = 1; i < 3; i++) {
+        for(int i = 1; i <= range; i++) {
             //ブロックとの当たり判定の結果を格納する変数
             RaycastHit Hit;
 
             //爆風の広げた先に何か存在するのか確認
             Physics.Raycast
             (
-                transform.position + new Vector3(0, 0.5f, 0),
+                transform.position + new Vector3(0, 0.1f, 0),
                 direction,
                 out Hit,
                 i,
-                levelMask
+                layerMask
             );
 
             //爆風を広げた先に何も存在しない場合
@@ -68,7 +71,7 @@ public class Bomb : MonoBehaviour
                     explosionPrefab.transform.rotation
                     );
             }
-            //爆風を広げた先にブロックが存在する場合
+            ////爆風を広げた先にブロックが存在する場合
             else {
                 //爆風をこれ以上広げない
                 break;

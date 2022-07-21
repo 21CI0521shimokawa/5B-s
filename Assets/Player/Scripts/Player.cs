@@ -39,7 +39,7 @@ public class Player : MonoBehaviour
     }
 
     // TODO: ボムとの当たり判定
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Blast")) {
             ReceiveDamage();
@@ -49,5 +49,6 @@ public class Player : MonoBehaviour
     private void ReceiveDamage()
     {
         _status.ToDamaged();
+        Debug.Log("<color=red>プレイヤーダメージ</color>");
     }
 }
