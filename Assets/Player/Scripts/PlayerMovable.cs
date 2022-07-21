@@ -42,7 +42,6 @@ public class PlayerMovable : MonoBehaviour
         }
         
         float dir = Mathf.Atan2(z, x);
-        Debug.Log(dir * Mathf.Rad2Deg);
         SetVelocity(dir);
         SetRotation(dir);
     }
